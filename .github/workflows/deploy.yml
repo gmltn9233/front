@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ]
 
+# 권한 주지않으면 Crdentials 오류
+permissions:
+  id-token: write  
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
