@@ -31,7 +31,7 @@ jobs:
       - name: Zip and Upload deployment files to S3
         run: |
           zip -r deployment.zip appspec.yml scripts/
-          aws s3 cp deployment.zip s3://Jeff-codedeploy-bucket/deployment.zip
+          aws s3 cp deployment.zip s3://jeff-codedeploy-bucket /deployment.zip
 
       - name: Trigger CodeDeploy deployment from S3
         run: |
