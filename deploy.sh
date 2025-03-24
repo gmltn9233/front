@@ -6,7 +6,7 @@ REGION="ap-northeast-2"
 REPOSITORY="195275652706.dkr.ecr.${REGION}.amazonaws.com"
 IMAGE_NAME="${REPOSITORY}/frontend:latest"
 CONTAINER_NAME="frontend"
-port=80
+PORT=80
 
 # 포트 점유 여부 확인 및 종료
 if lsof -i :$PORT &>/dev/null; then
