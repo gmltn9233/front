@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
 
-# 권한 주지않으면 Crdentials 오류
 permissions:
   id-token: write  
 
@@ -29,23 +28,15 @@ jobs:
           aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 195275652706.dkr.ecr.ap-northeast-2.amazonaws.com
           docker push 195275652706.dkr.ecr.ap-northeast-2.amazonaws.com/frontend:latest
 
-      - name: Trigger CodeDeploy with AppSpecContent
+      - name: Zip and Upload deployment files to S3
         run: |
-          CONTENT=$(base64 -w 0 appspec.yml)
-          SHA256=$(openssl dgst -sha256 -binary appspec.yml | openssl base64)
+          zip -r deployment.zip appspec.yml scripts/
+          aws s3 cp deployment.zip s3://Jeff-codedeploy-bucket/deployment.zip
 
-          cat <<EOF > revision.json
-          {
-            "revisionType": "AppSpecContent",
-            "appSpecContent": {
-              "content": "$CONTENT",
-              "sha256": "$SHA256"
-            }
-          }
-          EOF
-
+      - name: Trigger CodeDeploy deployment from S3
+        run: |
           aws deploy create-deployment \
             --application-name Jeff-app \
             --deployment-group-name frontend-group \
-            --revision file://revision.json \
-            --deployment-config-name CodeDeployDefault.OneAtATime
+            --deployment-config-name CodeDeployDefault.OneAtATime \
+            --s3-location bucket=Jeff-codedeploy-bucket,key=deployment.zip,bundleType=zip
