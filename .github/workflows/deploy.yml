@@ -31,8 +31,21 @@ jobs:
 
       - name: Trigger CodeDeploy with AppSpecContent
         run: |
+          CONTENT=$(base64 -w 0 appspec.yml)
+          SHA256=$(openssl dgst -sha256 -binary appspec.yml | openssl base64)
+
+          cat <<EOF > revision.json
+          {
+            "revisionType": "AppSpecContent",
+            "appSpecContent": {
+              "content": "$CONTENT",
+              "sha256": "$SHA256"
+            }
+          }
+          EOF
+
           aws deploy create-deployment \
             --application-name Jeff-app \
             --deployment-group-name frontend-group \
-            --revision '{"revisionType":"AppSpecContent","appSpecContent":{"content":"'"$(base64 appspec.yml)"'","sha256":"'"$(openssl dgst -sha256 -binary appspec.yml | openssl base64)"'"}}' \
+            --revision file://revision.json \
             --deployment-config-name CodeDeployDefault.OneAtATime
