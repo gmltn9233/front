@@ -6,6 +6,17 @@ REGION="ap-northeast-2"
 REPOSITORY="195275652706.dkr.ecr.${REGION}.amazonaws.com"
 IMAGE_NAME="${REPOSITORY}/frontend:latest"
 CONTAINER_NAME="frontend"
+port=80
+
+# 포트 점유 여부 확인 및 종료
+if lsof -i :$PORT &>/dev/null; then
+  echo "[WARNING] Port $PORT is already in use. Stopping existing container using it..."
+  CONTAINER_ID=$(docker ps --filter "publish=$PORT" --format "{{.ID}}")
+  if [ -n "$CONTAINER_ID" ]; then
+    docker stop "$CONTAINER_ID"
+    docker rm "$CONTAINER_ID"
+  fi
+fi
 
 echo "[INFO] Stop & remove previous container if exists..."
 docker stop $CONTAINER_NAME || true
