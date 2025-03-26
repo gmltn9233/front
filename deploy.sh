@@ -4,7 +4,7 @@ set -e  # 오류 발생 시 스크립트 즉시 종료
 # 설정
 REGION="ap-northeast-2"
 REPOSITORY="195275652706.dkr.ecr.${REGION}.amazonaws.com"
-IMAGE_NAME="${REPOSITORY}/frontend:latest"
+IMAGE_NAME="${REPOSITORY}/frontend-dev:latest"
 CONTAINER_NAME="frontend"
 PORT=80
 
